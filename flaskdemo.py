@@ -20,6 +20,12 @@ def about():
 def search():
     if request.method == 'POST':
         session['search_term'] = request.form['search']
+
+        if 'search_history' not in session:
+            session['search_history'] = []
+        if session['search_term'] not in session['search_history']:
+            session['search_history'].append(session['search_term'])
+
         return redirect(url_for('results'))
     return render_template("search.html")
 
@@ -30,6 +36,10 @@ def results():
     page = get_page(search_term)
     return render_template("results.html", page=page)
 
+@app.route('/history')
+def history():
+    search_history = session.get('search_history',[])
+    return render_template("history.html", search_history=search_history)
 
 def get_page(search_term):
     try:
